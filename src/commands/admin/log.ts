@@ -21,6 +21,9 @@ export default Command({
           description: 'Which log to set',
           type: ApplicationCommandOptionType.String,
           required: true,
+          choices: [
+            { name: '宣伝検閲', value: 'ad_filter' },
+          ],
         },
         {
           name: 'channel',
@@ -41,6 +44,9 @@ export default Command({
           description: 'Which log to delete',
           type: ApplicationCommandOptionType.String,
           required: true,
+          choices: [
+            { name: '宣伝検閲', value: 'ad_filter' },
+          ],
         },
       ],
     },
