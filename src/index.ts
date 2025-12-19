@@ -1,9 +1,11 @@
 import { GatewayIntentBits, Partials } from 'discord.js';
 import { Distant } from './lib/modules/Distant';
 import dotenv from 'dotenv';
+import I18n from './lib/modules/I18n';
 
 dotenv.config();
 
+const i18n = new I18n(process.env.LANG || 'ja');
 
 const ws = require('@discordjs/ws');
 const identifyProperties =
@@ -26,10 +28,10 @@ export const client = new Distant(
 
 client
   .start()
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  })
   .then(() => {
-    console.log('Bot is ready');
+    console.log(i18n.t('ready.message'));
+  })
+  .catch((error) => {
+    console.error(i18n.t('error.startup', { error: String(error) }));
+    process.exit(1);
   });
