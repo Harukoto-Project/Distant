@@ -1,0 +1,30 @@
+{
+  "name": "distant_ai",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "repository": "git@github.com:Harukoto-Project/Distant.git",
+  "author": "Harukoto Project",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "@types/glob": "^7.2.0",
+    "@types/minimatch": "^6.0.0",
+    "@types/node": "^25.0.3",
+    "dotenv": "^17.2.3",
+    "minimatch": "^10.1.1",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "node dist/index.js",
+    "dev": "run-s build start",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "discord.js": "^14.25.1",
+    "glob": "^7.2.3",
+    "nodemon": "^3.1.11"
+  }
+}
