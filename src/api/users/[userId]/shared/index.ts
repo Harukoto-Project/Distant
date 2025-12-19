@@ -1,52 +1,44 @@
 import express from 'express';
 import type { Client } from 'discord.js';
 
-function checkApiKey(req: express.Request) {
-	const configured = process.env.API_KEY;
-	if (!configured) return false;
-	const key = (req.headers['x-api-key'] as string) || req.body?.apiKey || (req.headers.authorization || '').replace(/^Bearer\s+/, '');
-	return key === configured;
-}
+type Params = { userId: string };
 
 export default function createSharedRouter(client: Client) {
-	const router = express.Router({ mergeParams: true });
+  const router = express.Router({ mergeParams: true });
 
-	// POST /users/:userId/shared
-	router.post('/', async (req: express.Request<{ userId: string }>, res) => {
-		try {
-			if (!checkApiKey(req)) return res.status(401).json({ error: 'invalid_api_key' });
+  async function findMutualGuildIds(userId: string): Promise<string[]> {
+    const guilds = Array.from(client.guilds.cache.values());
+    const checks = guilds.map((g) =>
+      g.members.fetch(userId).then(() => g.id).catch(() => null),
+    );
+    const results = await Promise.allSettled(checks);
+    return results
+      .filter((r): r is PromiseFulfilledResult<string | null> => r.status === 'fulfilled')
+      .map((r) => r.value)
+      .filter(Boolean) as string[];
+  }
 
-			const userId = req.params.userId;
-			const { guildId } = req.body || {};
-			if (!userId || !guildId) return res.status(400).json({ error: 'missing_parameters' });
+  router.post('/', async (req: express.Request<Params>, res) => {
+    const userId = req.params.userId;
+    const { guildId } = req.body || {};
+    if (!userId || !guildId) return res.status(400).json({ error: 'missing_parameters' });
 
-			const targetGuild = client.guilds.cache.get(guildId);
-			if (!targetGuild) return res.status(404).json({ error: 'guild_not_found' });
+    const targetGuild = client.guilds.cache.get(guildId);
+    if (!targetGuild) return res.status(404).json({ error: 'guild_not_found' });
 
-			// Verify the user is in the provided guild
-			try {
-				await targetGuild.members.fetch(userId);
-			} catch (e) {
-				return res.status(404).json({ error: 'user_not_in_guild' });
-			}
+    try {
+      await targetGuild.members.fetch(userId);
+    } catch {
+      return res.status(404).json({ error: 'user_not_in_guild' });
+    }
 
-			const mutual: string[] = [];
-			const guilds = Array.from(client.guilds.cache.values());
-			for (const g of guilds) {
-				try {
-					const m = await g.members.fetch(userId).catch(() => null);
-					if (m) mutual.push(g.id);
-				} catch (e) {
-					// ignore
-				}
-			}
+    try {
+      const mutual = await findMutualGuildIds(userId);
+      return res.json({ mutualGuilds: mutual });
+    } catch {
+      return res.status(500).json({ error: 'internal_error' });
+    }
+  });
 
-			return res.json({ mutualGuilds: mutual });
-		} catch (err) {
-			return res.status(500).json({ error: 'internal_error' });
-		}
-	});
-
-	return router;
+  return router;
 }
-

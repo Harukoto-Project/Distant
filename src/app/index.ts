@@ -2,7 +2,10 @@ import express from 'express';
 import type { Client } from 'discord.js';
 import createSharedRouter from '../api/users/[userId]/shared';
 
-export function startApp(client: Client, port = Number(process.env.API_PORT) || 3000) {
+export function startApp(
+  client: Client,
+  port = Number(process.env.API_PORT) || 3000,
+) {
   const app = express();
   app.use(express.json());
 

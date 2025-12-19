@@ -42,7 +42,9 @@ export default new Event('interactionCreate', async (interaction) => {
     }
 
     if (!command)
-      return await interaction.followUp({ content: i18n.t('command.not_found') });
+      return await interaction.followUp({
+        content: i18n.t('command.not_found'),
+      });
 
     if (!command.execute.interaction)
       return await interaction.followUp({

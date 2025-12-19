@@ -89,7 +89,14 @@ export class Distant extends Client {
     this.once('ready', () => {
       this.application?.commands
         .set(commands)
-        .then(() => console.log(getI18n().t('commands.registered', { count: String(commands.length), guilds: String(this.guilds.cache.size) })))
+        .then(() =>
+          console.log(
+            getI18n().t('commands.registered', {
+              count: String(commands.length),
+              guilds: String(this.guilds.cache.size),
+            }),
+          ),
+        )
         .catch((e) => {
           console.error(getI18n().t('commands.register_failed'));
           console.error(e);

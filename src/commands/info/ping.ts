@@ -11,7 +11,9 @@ export default Command({
   execute: {
     interaction: async ({ client, interaction }) => {
       await interaction.followUp({
-        content: i18n.t('commands.ping.response', { ping: String(client.ws.ping) }),
+        content: i18n.t('commands.ping.response', {
+          ping: String(client.ws.ping),
+        }),
         ephemeral: true,
       });
     },

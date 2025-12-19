@@ -10,7 +10,9 @@ const i18n = getI18n();
 
 const ws = require('@discordjs/ws');
 const identifyProperties =
-  ws && ws.DefaultWebSocketManagerOptions && ws.DefaultWebSocketManagerOptions.identifyProperties;
+  ws &&
+  ws.DefaultWebSocketManagerOptions &&
+  ws.DefaultWebSocketManagerOptions.identifyProperties;
 if (identifyProperties) identifyProperties.browser = 'Discord Android';
 
 export const client = new Distant(
