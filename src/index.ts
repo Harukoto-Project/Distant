@@ -4,6 +4,12 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+
+const ws = require('@discordjs/ws');
+const identifyProperties =
+  ws && ws.DefaultWebSocketManagerOptions && ws.DefaultWebSocketManagerOptions.identifyProperties;
+if (identifyProperties) identifyProperties.browser = 'Discord Android';
+
 export const client = new Distant(
   {
     intents: Object.values(GatewayIntentBits).filter(
