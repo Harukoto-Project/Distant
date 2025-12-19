@@ -23,7 +23,7 @@ export function mountRouters(app: express.Application, client: Client, baseDir =
         }
       }
     } catch (err) {
-      // ignore mount failures
+      console.error(`Failed to mount router from ${file}:`, err);
     }
   }
 }
