@@ -3,6 +3,7 @@ import { Distant } from './lib/modules/Distant';
 import dotenv from 'dotenv';
 import { getI18n } from './lib/modules/i18nInstance';
 import startApp from './app';
+import Database from './lib/modules/Database';
 
 dotenv.config();
 
@@ -34,6 +35,8 @@ client
   .then(() => {
     console.log(i18n.t('ready.message'));
     try {
+      const db = new Database();
+      db.init().catch(() => {});
       startApp(client);
     } catch (e) {
       console.error('Failed to start API', e);
