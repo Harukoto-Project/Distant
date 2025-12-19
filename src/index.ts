@@ -2,6 +2,7 @@ import { GatewayIntentBits, Partials } from 'discord.js';
 import { Distant } from './lib/modules/Distant';
 import dotenv from 'dotenv';
 import { getI18n } from './lib/modules/i18nInstance';
+import startApp from './app';
 
 dotenv.config();
 
@@ -30,6 +31,11 @@ client
   .start()
   .then(() => {
     console.log(i18n.t('ready.message'));
+    try {
+      startApp(client);
+    } catch (e) {
+      console.error('Failed to start API', e);
+    }
   })
   .catch((error) => {
     console.error(i18n.t('error.startup', { error: String(error) }));

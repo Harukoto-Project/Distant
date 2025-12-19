@@ -7,6 +7,7 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
+    "@types/express": "^4.17.17",
     "@types/glob": "^7.2.0",
     "@types/minimatch": "^6.0.0",
     "@types/node": "^25.0.3",
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "discord.js": "^14.25.1",
+    "express": "^5.2.1",
     "glob": "^7.2.3",
     "nodemon": "^3.1.11"
   }
