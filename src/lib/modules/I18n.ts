@@ -8,13 +8,25 @@ export default class I18n {
   }
 
   private load(locale: string): Record<string, any> {
-    try {
-      const p = path.join(__dirname, '../../locales', `${locale}.json`);
-      const raw = fs.readFileSync(p, 'utf8');
-      return JSON.parse(raw);
-    } catch (e) {
-      return {};
+    const candidates = [
+      path.join(__dirname, '../../locales', `${locale}.json`), // when running from src with ts-node
+      path.join(process.cwd(), 'src', 'locales', `${locale}.json`), // dev
+      path.join(process.cwd(), 'locales', `${locale}.json`), // project root locales
+      path.join(process.cwd(), 'dist', 'locales', `${locale}.json`), // built output
+    ];
+
+    for (const p of candidates) {
+      try {
+        if (fs.existsSync(p)) {
+          const raw = fs.readFileSync(p, 'utf8');
+          return JSON.parse(raw);
+        }
+      } catch (e) {
+        // try next
+      }
     }
+
+    return {};
   }
 
   t(key: string, vars?: Record<string, string | number>): string {

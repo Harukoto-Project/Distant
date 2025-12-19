@@ -1,8 +1,27 @@
 {
   "ready": {
-    "message": "ボットが準備できました"
+    "message": "ボットが準備できました",
+    "logged_in": "ログインしました: {{tag}}"
   },
   "error": {
     "startup": "起動中にエラーが発生しました: {{error}}"
+  },
+  "file": {
+    "not_found": "ファイルが見つかりません: {{file}}"
+  },
+  "commands": {
+    "registered": "{{count}}個のスラッシュコマンドを{{guilds}}個のサーバーで登録しました",
+    "register_failed": "スラッシュコマンドの登録に失敗しました",
+    "ping": {
+      "description": "Botの応答速度を確認します",
+      "response": "Pong! {{ping}}ms"
+    }
+  },
+  "command": {
+    "disabled": "現在このコマンドは無効化されています。",
+    "not_found": "コマンドが存在しません",
+    "not_slash_supported": "コマンドがスラッシュコマンドに対応していません",
+    "owner_only": "このコマンドはBot関係者のみ実行可能です",
+    "debug_mode": "開発モードが有効です\n許容されたユーザーのみコマンドを実行することができます"
   }
 }

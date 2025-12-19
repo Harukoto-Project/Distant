@@ -9,6 +9,7 @@ import {
 import { Event } from './Event';
 import { AnyCommandType, CommandType } from '../interfaces/Command';
 import dotenv from 'dotenv';
+import { getI18n } from './i18nInstance';
 
 import { promisify } from 'util';
 import glob from 'glob';
@@ -47,7 +48,7 @@ export class Distant extends Client {
   public async importFile<T>(filePath: string): Promise<T> {
     const file = await import(filePath);
     if (!file) {
-      console.log(`File ${filePath} not found`);
+      console.log(getI18n().t('file.not_found', { file: filePath }));
     }
 
     return file.default;
@@ -88,13 +89,9 @@ export class Distant extends Client {
     this.once('ready', () => {
       this.application?.commands
         .set(commands)
-        .then(() =>
-          console.log(
-            `${commands.length}個のスラッシュコマンドを${this.guilds.cache.size}個のサーバーで登録しました`,
-          ),
-        )
+        .then(() => console.log(getI18n().t('commands.registered', { count: String(commands.length), guilds: String(this.guilds.cache.size) })))
         .catch((e) => {
-          console.error('Failed to register slash commands');
+          console.error(getI18n().t('commands.register_failed'));
           console.error(e);
         });
     });

@@ -9,8 +9,10 @@ import {
 
 import { client } from '../../index';
 import { Event } from '../../lib/modules/Event';
+import { getI18n } from '../../lib/modules/i18nInstance';
 
 export default new Event('interactionCreate', async (interaction) => {
+  const i18n = getI18n();
   if (interaction.isCommand()) {
     const command = client.commands.get(interaction.commandName);
 
@@ -18,7 +20,7 @@ export default new Event('interactionCreate', async (interaction) => {
       return await interaction.reply({
         embeds: [
           {
-            description: '現在このコマンドは無効化されています。',
+            description: i18n.t('command.disabled'),
             color: Colors.Red,
           },
         ],
@@ -40,11 +42,11 @@ export default new Event('interactionCreate', async (interaction) => {
     }
 
     if (!command)
-      return await interaction.followUp({ content: 'コマンドが存在しません' });
+      return await interaction.followUp({ content: i18n.t('command.not_found') });
 
     if (!command.execute.interaction)
       return await interaction.followUp({
-        content: 'コマンドがスラッシュコマンドに対応していません',
+        content: i18n.t('command.not_slash_supported'),
       });
 
     if (
@@ -52,7 +54,7 @@ export default new Event('interactionCreate', async (interaction) => {
       !client.config.developerIds.includes(interaction.user.id)
     ) {
       return await interaction.followUp({
-        content: 'このコマンドはBot関係者のみ実行可能です',
+        content: i18n.t('command.owner_only'),
       });
     }
 
@@ -61,8 +63,7 @@ export default new Event('interactionCreate', async (interaction) => {
       !client.config.developerIds.includes(interaction.user.id)
     ) {
       return await interaction.followUp({
-        content:
-          '開発モードが有効です\n許容されたユーザーのみコマンドを実行することができます',
+        content: i18n.t('command.debug_mode'),
       });
     }
 

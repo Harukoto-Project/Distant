@@ -1,11 +1,11 @@
 import { GatewayIntentBits, Partials } from 'discord.js';
 import { Distant } from './lib/modules/Distant';
 import dotenv from 'dotenv';
-import I18n from './lib/modules/I18n';
+import { getI18n } from './lib/modules/i18nInstance';
 
 dotenv.config();
 
-const i18n = new I18n(process.env.LANG || 'ja');
+const i18n = getI18n();
 
 const ws = require('@discordjs/ws');
 const identifyProperties =
