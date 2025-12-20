@@ -62,8 +62,20 @@ export class Distant extends Client {
       __dirname + '/../../commands/**/*{.ts,.js}',
     );
 
+    const commandNames = new Set<string>();
+
     for (const file of commandFiles) {
       const command: CommandType = await this.importFile<CommandType>(file);
+
+      if (commandNames.has(command.name)) {
+        console.error(
+          getI18n().t('commands.duplicate_name', { name: command.name }),
+        );
+        console.error(`Duplicate found in file: ${file}`);
+        process.exit(1);
+      }
+
+      commandNames.add(command.name);
 
       if (command.userInstall) {
         command.contexts = [

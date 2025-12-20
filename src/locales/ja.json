@@ -23,6 +23,17 @@
     "not_slash_supported": "コマンドがスラッシュコマンドに対応していません",
     "owner_only": "このコマンドはBot関係者のみ実行可能です",
     "debug_mode": "開発モードが有効です\n許容されたユーザーのみコマンドを実行することができます"
+  },
+  "adfilter": {
+    "anchor_title": "宣伝検閲チャンネル",
+    "anchor_desc": "投稿すると**AIボットが検閲を行います。**\n\n`犯罪/規約違反/その他不適切な宣伝は削除されます。`",
+    "button_label": "🤖｜AIサーバー管理BOTを導入する",
+    "notify_deleted": "{{user}} の不適切な宣伝を削除しました。理由: {{reason}}",
+    "log_title": "不適切な宣伝が削除されました",
+    "log_channel": "チャンネル",
+    "log_sender": "送信者",
+    "log_reason": "理由",
+    "log_content": "内容: \n```\n{{content}}\n```",
+    "unknown": "不明"
   }
-
 }

@@ -17,7 +17,7 @@ export default new Event('interactionCreate', async (interaction) => {
     const command = client.commands.get(interaction.commandName);
 
     if (command?.isDisabled) {
-      return await interaction.reply({
+      await interaction.reply({
         embeds: [
           {
             description: i18n.t('command.disabled'),
@@ -25,6 +25,7 @@ export default new Event('interactionCreate', async (interaction) => {
           },
         ],
       });
+      return;
     }
 
     if (!interaction.guild && interaction.inGuild()) {
@@ -41,32 +42,38 @@ export default new Event('interactionCreate', async (interaction) => {
       }
     }
 
-    if (!command)
-      return await interaction.followUp({
+    if (!command) {
+      await interaction.followUp({
         content: i18n.t('command.not_found'),
       });
+      return;
+    }
 
-    if (!command.execute.interaction)
-      return await interaction.followUp({
+    if (!command.execute.interaction) {
+      await interaction.followUp({
         content: i18n.t('command.not_slash_supported'),
       });
+      return;
+    }
 
     if (
       command.isOwnerCommand &&
       !client.config.developerIds.includes(interaction.user.id)
     ) {
-      return await interaction.followUp({
+      await interaction.followUp({
         content: i18n.t('command.owner_only'),
       });
+      return;
     }
 
     if (
       client.config.debugMode &&
       !client.config.developerIds.includes(interaction.user.id)
     ) {
-      return await interaction.followUp({
+      await interaction.followUp({
         content: i18n.t('command.debug_mode'),
       });
+      return;
     }
 
     if (!command.type || command.type === ApplicationCommandType.ChatInput) {

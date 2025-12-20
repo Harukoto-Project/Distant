@@ -9,10 +9,10 @@ export default class I18n {
 
   private load(locale: string): Record<string, any> {
     const candidates = [
-      path.join(__dirname, '../../locales', `${locale}.json`), // when running from src with ts-node
-      path.join(process.cwd(), 'src', 'locales', `${locale}.json`), // dev
-      path.join(process.cwd(), 'locales', `${locale}.json`), // project root locales
-      path.join(process.cwd(), 'dist', 'locales', `${locale}.json`), // built output
+      path.join(__dirname, '../../locales', `${locale}.json`),
+      path.join(process.cwd(), 'src', 'locales', `${locale}.json`),
+      path.join(process.cwd(), 'locales', `${locale}.json`),
+      path.join(process.cwd(), 'dist', 'locales', `${locale}.json`),
     ];
 
     for (const p of candidates) {
@@ -22,7 +22,6 @@ export default class I18n {
           return JSON.parse(raw);
         }
       } catch (e) {
-        // try next
       }
     }
 
