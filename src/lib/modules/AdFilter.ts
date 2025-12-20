@@ -105,7 +105,7 @@ export async function moderateMessage(client: Client, message: Message) {
             .setTitle(i18n.t('adfilter.log_title'))
             .setThumbnail(message.author.displayAvatarURL() || '')
             .setDescription(
-              `**${i18n.t('adfilter.log_content', { content: message.content || i18n.t('adfilter.unknown') })}**\n` +
+              i18n.t('adfilter.log_content', { content: message.content || i18n.t('adfilter.unknown') }) +
               i18n.t('adfilter.log_reason', { reason: policy.reason || i18n.t('adfilter.unknown') })
             )
             .setColor(0xff0000)
