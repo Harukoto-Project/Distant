@@ -37,6 +37,7 @@
     "unknown": "不明"
     ,
     "command_description": "宣伝検閲用チャンネルの管理",
+    "log_confidence": "危険度"
     "set_description": "宣伝検閲に使用するチャンネルを設定します",
     "channel_description": "宣伝検閲メッセージを受け取るテキストチャンネル",
     "log_channel_description": "モデレーションログを送信するオプションのチャンネル",

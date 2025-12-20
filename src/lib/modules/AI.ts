@@ -40,12 +40,15 @@ export async function checkPolicy(text: string): Promise<PolicyCheckResult> {
           const rawConfidence = Number(parsed.confidence || 0);
           let confidence = Number.isFinite(rawConfidence) ? (rawConfidence <= 1 ? rawConfidence * 100 : rawConfidence) : 0;
           confidence = Math.max(0, Math.min(100, confidence));
-          const result = {
-            is_safe: Boolean(parsed.is_safe),
+          const isSafe = Boolean(parsed.is_safe);
+          if (isSafe) {
+            return { is_safe: true };
+          }
+          return {
+            is_safe: false,
             reason: String(parsed.reason || ''),
             confidence,
           };
-          return result;
         } catch (e) {}
       }
     }

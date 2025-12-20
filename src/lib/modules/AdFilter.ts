@@ -110,6 +110,7 @@ export async function moderateMessage(client: Client, message: Message) {
               { name: i18n.t('adfilter.log_channel'), value: `<#${configuredChannelId}>`, inline: true },
               { name: i18n.t('adfilter.log_sender'), value: ` <@!${message.author.id}> (${message.author.id})`, inline: true },
               { name: i18n.t('adfilter.log_reason'), value: policy.reason || i18n.t('adfilter.unknown'), inline: false },
+              { name: i18n.t('adfilter.log_confidence'), value: typeof policy.confidence === 'number' ? `${policy.confidence}%` : i18n.t('adfilter.unknown'), inline: false },
             )
             .setTimestamp();
           await (logCh as TextChannel).send({ embeds: [logEmbed] });
