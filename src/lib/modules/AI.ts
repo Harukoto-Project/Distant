@@ -4,7 +4,9 @@ export type PolicyCheckResult = {
   confidence?: number;
 };
 
+
 import Database from './Database';
+import { getI18n } from './i18nInstance';
 
 export async function checkPolicy(text: string, guildId?: string): Promise<PolicyCheckResult> {
   const baseURL = 'https://api.voids.top/v1';
@@ -18,12 +20,8 @@ export async function checkPolicy(text: string, guildId?: string): Promise<Polic
       if (l) lang = l;
     } catch {}
   }
-  let systemPrompt = '';
-  if (lang === 'ja') {
-    systemPrompt = '安全性チェック。JSONのみで返してください。is_safe: trueの場合は{"is_safe":true}だけを返してください。フィールド: is_safe, reason, confidence(0-100)。例: {"is_safe":false,"reason":"性的コンテンツの可能性","confidence":90}';
-  } else {
-    systemPrompt = 'Safety check. Respond only with JSON. If is_safe: true, respond only with {"is_safe":true}. Fields: is_safe, reason, confidence (0-100). Example: {"is_safe":false,"reason":"Possible sexual content","confidence":90}';
-  }
+  const i18n = getI18n();
+  let systemPrompt = i18n.t('ai.system_prompt');
   const compactText = String(text).replace(/\s+/g, ' ').trim().slice(0, 1000);
   const body = {
     model,

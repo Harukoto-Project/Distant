@@ -1,4 +1,8 @@
  {
+  "ai": {
+    "system_prompt": "安全性チェック。JSONのみで返してください。is_safe: trueの場合は{\"is_safe\":true}だけを返してください。フィールド: is_safe, reason, confidence(0-100)。例: {\"is_safe\":false,\"reason\":\"性的コンテンツの可能性\",\"confidence\":90}",
+    "system_prompt_en": "Safety check. Respond only with JSON. If is_safe: true, respond only with {\"is_safe\":true}. Fields: is_safe, reason, confidence (0-100). Example: {\"is_safe\":false,\"reason\":\"Possible sexual content\",\"confidence\":90}"
+  },
   "language": {
     "command_description": "Botの応答言語を選択します",
     "lang_description": "Botが応答する言語を選択してください",
