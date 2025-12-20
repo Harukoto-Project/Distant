@@ -21,8 +21,7 @@ export default class I18n {
           const raw = fs.readFileSync(p, 'utf8');
           return JSON.parse(raw);
         }
-      } catch (e) {
-      }
+      } catch (e) {}
     }
 
     return {};

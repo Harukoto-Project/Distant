@@ -1,4 +1,3 @@
-
 import {
   ApplicationIntegrationType,
   Client,

@@ -1,6 +1,14 @@
 import { checkPolicy } from './AI';
 import Database from './Database';
-import { Client, Message, TextChannel, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
+import {
+  Client,
+  Message,
+  TextChannel,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  EmbedBuilder,
+} from 'discord.js';
 import { getI18n } from './i18nInstance';
 
 const db = new Database();
@@ -9,8 +17,13 @@ const channelLocks: Map<string, Promise<void>> = new Map();
 async function withChannelLock(channelId: string, fn: () => Promise<void>) {
   const prev = channelLocks.get(channelId) ?? Promise.resolve();
   let resolvePrev: () => void;
-  const next = new Promise<void>(resolve => { resolvePrev = resolve; });
-  channelLocks.set(channelId, prev.then(() => next));
+  const next = new Promise<void>((resolve) => {
+    resolvePrev = resolve;
+  });
+  channelLocks.set(
+    channelId,
+    prev.then(() => next),
+  );
   try {
     await prev;
     await fn();
@@ -20,7 +33,11 @@ async function withChannelLock(channelId: string, fn: () => Promise<void>) {
   }
 }
 
-export async function sendAnchor(client: Client, guildId: string, channelId: string) {
+export async function sendAnchor(
+  client: Client,
+  guildId: string,
+  channelId: string,
+) {
   await db.init();
   const ch = await client.channels.fetch(channelId).catch(() => null);
   if (!ch || !(ch as any).isTextBased || !(ch as TextChannel).send) return;
@@ -43,10 +60,12 @@ export async function sendAnchor(client: Client, guildId: string, channelId: str
     const button = new ButtonBuilder()
       .setLabel(i18n.t('adfilter.button_label'))
       .setStyle(ButtonStyle.Link)
-      .setURL('https://discord.com/oauth2/authorize?client_id=1451556127438540840&permissions=8&integration_type=0&scope=bot');
+      .setURL(
+        'https://discord.com/oauth2/authorize?client_id=1451556127438540840&permissions=8&integration_type=0&scope=bot',
+      );
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
     const sent = await textCh.send({ embeds: [embed], components: [row] });
-    await db.setAdFilter(guildId, channelId, sent.id);
+    await db.updateAdFilterMessageId(guildId, sent.id);
   } catch (e) {
     console.error('[AdFilter] sendAnchor error:', e);
   }
@@ -59,7 +78,10 @@ export async function removeAnchor(client: Client, guildId: string) {
   const ch = await client.channels.fetch(record.channel_id).catch(() => null);
   if (ch && (ch as TextChannel).messages && record.message_id) {
     try {
-      await (ch as TextChannel).messages.fetch(record.message_id).then(m => m.delete()).catch(() => null);
+      await (ch as TextChannel).messages
+        .fetch(record.message_id)
+        .then((m) => m.delete())
+        .catch(() => null);
     } catch (e) {}
   }
   await db.deleteAdFilter(guildId);
@@ -67,37 +89,46 @@ export async function removeAnchor(client: Client, guildId: string) {
 
 export async function moderateMessage(client: Client, message: Message) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const inviteRegex = /https?:\/\/(?:www\.)?(?:discord(?:app)?\.com\/invite|discord\.gg)\/([a-zA-Z0-9]+)/g;
+  const inviteRegex =
+    /https?:\/\/(?:www\.)?(?:discord(?:app)?\.com\/invite|discord\.gg)\/([a-zA-Z0-9]+)/g;
   const allUrls = message.content?.match(urlRegex) || [];
-  let invitesRaw = Array.from(message.content?.matchAll(inviteRegex) || []).map(m => m[1]);
+  let invitesRaw = Array.from(message.content?.matchAll(inviteRegex) || []).map(
+    (m) => m[1],
+  );
   for (const u of allUrls) {
-    const m = u.match(/https?:\/\/(?:www\.)?(?:discord(?:app)?\.com\/invite|discord\.gg)\/([a-zA-Z0-9]+)/);
+    const m = u.match(
+      /https?:\/\/(?:www\.)?(?:discord(?:app)?\.com\/invite|discord\.gg)\/([a-zA-Z0-9]+)/,
+    );
     if (m && m[1] && !invitesRaw.includes(m[1])) invitesRaw.push(m[1]);
   }
-  const urls = allUrls.filter(u => !u.match(inviteRegex));
+  const urls = allUrls.filter((u) => !u.match(inviteRegex));
   console.log('urls:', urls);
   console.log('invitesRaw:', invitesRaw);
 
-  let embedMetas = (message.embeds || []).map(embed => ({
+  let embedMetas = (message.embeds || []).map((embed) => ({
     title: embed.title || '',
     description: embed.description || '',
     url: embed.url || '',
     image: embed.image?.url || '',
     provider: embed.provider?.name || '',
-    author: embed.author?.name || ''
+    author: embed.author?.name || '',
   }));
 
   console.log('embeds:', embedMetas);
 
-  async function fetchInviteMeta(code　: string): Promise<{ code: string; name: string; description: string }> {
+  async function fetchInviteMeta(
+    code: string,
+  ): Promise<{ code: string; name: string; description: string }> {
     try {
-      const res = await fetch(`https://discord.com/api/v10/invites/${code}?with_counts=true&with_expiration=true`);
+      const res = await fetch(
+        `https://discord.com/api/v10/invites/${code}?with_counts=true&with_expiration=true`,
+      );
       if (!res.ok) return { code, name: '', description: '' };
       const data = await res.json();
       return {
         code,
         name: data.guild?.name || '',
-        description: data.guild?.description || ''
+        description: data.guild?.description || '',
       };
     } catch {
       return { code, name: '', description: '' };
@@ -109,13 +140,19 @@ export async function moderateMessage(client: Client, message: Message) {
   const aiInput: any = { content: message.content || '' };
   if (urls.length > 0) aiInput.urls = urls;
   if (embedMetas.length > 0) aiInput.embeds = embedMetas;
-  const invitesArr = inviteMetas.map(i => ({ code: i.code, name: i.name, description: i.description }));
+  const invitesArr = inviteMetas.map((i) => ({
+    code: i.code,
+    name: i.name,
+    description: i.description,
+  }));
   if (invitesArr.length > 0) aiInput.invites = invitesArr;
   console.log('aiInput:', aiInput);
   if (message.author.bot || !message.guildId) return;
   await db.init();
-  const configuredChannelId = await db.getLogChannel(message.guildId, 'ad_filter');
-  if (!configuredChannelId) return;
+  const adFilterConfig = await db.getAdFilter(message.guildId);
+  if (!adFilterConfig) return;
+  const configuredChannelId = adFilterConfig.channel_id;
+  const logChannelId = adFilterConfig.log_channel_id;
   if (message.channelId !== configuredChannelId) return;
 
   await withChannelLock(configuredChannelId, async () => {
@@ -132,7 +169,10 @@ export async function moderateMessage(client: Client, message: Message) {
 
     try {
       const i18n = getI18n();
-      const notify = i18n.t('adfilter.notify_deleted', { user: `<@!${message.author.id}>`, reason: policy.reason || '' });
+      const notify = i18n.t('adfilter.notify_deleted', {
+        user: `<@!${message.author.id}>`,
+        reason: policy.reason || '',
+      });
       const ch = await client.channels.fetch(configuredChannelId);
       if (ch && (ch as any).isTextBased && (ch as any).isTextBased()) {
         await (ch as TextChannel).send(notify);
@@ -142,7 +182,6 @@ export async function moderateMessage(client: Client, message: Message) {
     }
 
     try {
-      const logChannelId = await db.getLogChannel(message.guildId!, 'log');
       if (logChannelId) {
         const logCh = await client.channels.fetch(logChannelId);
         if (logCh && logCh.isTextBased && logCh.isTextBased()) {
@@ -151,14 +190,33 @@ export async function moderateMessage(client: Client, message: Message) {
             .setTitle(i18n.t('adfilter.log_title'))
             .setThumbnail(message.author.displayAvatarURL() || '')
             .setDescription(
-              i18n.t('adfilter.log_content', { content: message.content || i18n.t('adfilter.unknown') }) +
-              i18n.t('adfilter.log_reason', { reason: policy.reason || i18n.t('adfilter.unknown') })
+              i18n.t('adfilter.log_content', {
+                content: message.content || i18n.t('adfilter.unknown'),
+              }) +
+                i18n.t('adfilter.log_reason', {
+                  reason: policy.reason || i18n.t('adfilter.unknown'),
+                }),
             )
             .setColor(0xff0000)
             .addFields(
-              { name: i18n.t('adfilter.log_channel'), value: `<#${configuredChannelId}>`, inline: true },
-              { name: i18n.t('adfilter.log_sender'), value: ` <@!${message.author.id}> (${message.author.id})`, inline: true },
-              { name: i18n.t('adfilter.log_confidence'), value: typeof policy.confidence === 'number' ? `${policy.confidence}%` : i18n.t('adfilter.unknown'), inline: true },
+              {
+                name: i18n.t('adfilter.log_channel'),
+                value: `<#${configuredChannelId}>`,
+                inline: true,
+              },
+              {
+                name: i18n.t('adfilter.log_sender'),
+                value: ` <@!${message.author.id}> (${message.author.id})`,
+                inline: true,
+              },
+              {
+                name: i18n.t('adfilter.log_confidence'),
+                value:
+                  typeof policy.confidence === 'number'
+                    ? `${policy.confidence}%`
+                    : i18n.t('adfilter.unknown'),
+                inline: true,
+              },
             )
             .setTimestamp();
           await (logCh as TextChannel).send({ embeds: [logEmbed] });

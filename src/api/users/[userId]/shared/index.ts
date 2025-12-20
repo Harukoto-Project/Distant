@@ -9,11 +9,17 @@ export default function createSharedRouter(client: Client) {
   async function findMutualGuildIds(userId: string): Promise<string[]> {
     const guilds = Array.from(client.guilds.cache.values());
     const checks = guilds.map((g) =>
-      g.members.fetch(userId).then(() => g.id).catch(() => null),
+      g.members
+        .fetch(userId)
+        .then(() => g.id)
+        .catch(() => null),
     );
     const results = await Promise.allSettled(checks);
     return results
-      .filter((r): r is PromiseFulfilledResult<string | null> => r.status === 'fulfilled')
+      .filter(
+        (r): r is PromiseFulfilledResult<string | null> =>
+          r.status === 'fulfilled',
+      )
       .map((r) => r.value)
       .filter(Boolean) as string[];
   }
@@ -21,7 +27,8 @@ export default function createSharedRouter(client: Client) {
   router.post('/', async (req: express.Request<Params>, res) => {
     const userId = req.params.userId;
     const { guildId } = req.body || {};
-    if (!userId || !guildId) return res.status(400).json({ error: 'missing_parameters' });
+    if (!userId || !guildId)
+      return res.status(400).json({ error: 'missing_parameters' });
 
     const targetGuild = client.guilds.cache.get(guildId);
     if (!targetGuild) return res.status(404).json({ error: 'guild_not_found' });

@@ -1,5 +1,7 @@
-
-import { ApplicationCommandType, ApplicationCommandOptionType } from 'discord.js';
+import {
+  ApplicationCommandType,
+  ApplicationCommandOptionType,
+} from 'discord.js';
 import { Command } from '../lib/modules/Command';
 import Database from '../lib/modules/Database';
 import { getI18n } from '../lib/modules/i18nInstance';
@@ -16,10 +18,8 @@ export default Command({
       name: 'lang',
       description: getI18n().t('language.lang_description'),
       required: true,
-      choices: [
-        { name: getI18n().t('language.japanese'), value: 'ja' }
-      ]
-    }
+      choices: [{ name: getI18n().t('language.japanese'), value: 'ja' }],
+    },
   ],
   execute: {
     interaction: async ({ interaction }) => {
@@ -27,19 +27,27 @@ export default Command({
       const guildId = interaction.guildId;
       const i18n = getI18n();
       if (!guildId) {
-        await interaction.followUp({ content: i18n.t('language.need_guild'), ephemeral: true });
+        await interaction.followUp({
+          content: i18n.t('language.need_guild'),
+          ephemeral: true,
+        });
         return;
       }
       const lang = interaction.options.getString('lang', true);
       await db.init();
-      await db.setLogChannel(guildId, 'lang', lang);
+      await db.setGuildLang(guildId, lang);
       const client = interaction.client as Distant;
       if (client && client.application) {
         if (client.reRegisterGuildCommands) {
           await client.reRegisterGuildCommands(guildId, lang);
         }
       }
-      await interaction.followUp({ content: i18n.t('language.set_success', { lang: i18n.t(`language.${lang}`) }), ephemeral: true });
-    }
-  }
+      await interaction.followUp({
+        content: i18n.t('language.set_success', {
+          lang: i18n.t(`language.${lang}`),
+        }),
+        ephemeral: true,
+      });
+    },
+  },
 });

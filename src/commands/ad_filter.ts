@@ -1,4 +1,8 @@
-import { ApplicationCommandType, ChannelType, ApplicationCommandOptionType } from 'discord.js';
+import {
+  ApplicationCommandType,
+  ChannelType,
+  ApplicationCommandOptionType,
+} from 'discord.js';
 import { Command } from '../lib/modules/Command';
 import Database from '../lib/modules/Database';
 import { sendAnchor, removeAnchor } from '../lib/modules/AdFilter';
@@ -45,7 +49,10 @@ export default Command({
       const sub = interaction.options.getSubcommand();
       const guildId = interaction.guildId;
       if (!guildId) {
-        await interaction.followUp({ content: i18n.t('adfilter.need_guild'), ephemeral: true });
+        await interaction.followUp({
+          content: i18n.t('adfilter.need_guild'),
+          ephemeral: true,
+        });
         return;
       }
 
@@ -55,36 +62,59 @@ export default Command({
         const channel = interaction.options.getChannel('channel', true);
         const logChannel = interaction.options.getChannel('log_channel', false);
         if (channel.type !== ChannelType.GuildText) {
-          await interaction.followUp({ content: i18n.t('adfilter.not_text_channel'), ephemeral: true });
+          await interaction.followUp({
+            content: i18n.t('adfilter.not_text_channel'),
+            ephemeral: true,
+          });
           return;
         }
-        await db.setLogChannel(guildId, 'ad_filter', channel.id);
+        const logChannelId =
+          logChannel && logChannel.type === ChannelType.GuildText
+            ? logChannel.id
+            : null;
+        if (logChannel && logChannel.type !== ChannelType.GuildText) {
+          await interaction.followUp({
+            content: i18n.t('adfilter.not_log_text_channel'),
+            ephemeral: true,
+          });
+          return;
+        }
+        await db.setAdFilter(guildId, channel.id, null, logChannelId);
         try {
           await sendAnchor(client, guildId, channel.id);
         } catch (e) {
           console.error('Failed to send anchor on set:', e);
         }
         if (logChannel) {
-          if (logChannel.type !== ChannelType.GuildText) {
-            await interaction.followUp({ content: i18n.t('adfilter.not_log_text_channel'), ephemeral: true });
-            return;
-          }
-          await db.setLogChannel(guildId, 'log', logChannel.id);
-          await interaction.followUp({ content: i18n.t('adfilter.set_success_with_log', { channel: `<#${channel.id}>`, log: `<#${logChannel.id}>` }), ephemeral: true });
+          await interaction.followUp({
+            content: i18n.t('adfilter.set_success_with_log', {
+              channel: `<#${channel.id}>`,
+              log: `<#${logChannel.id}>`,
+            }),
+            ephemeral: true,
+          });
           return;
         }
-        await interaction.followUp({ content: i18n.t('adfilter.set_success', { channel: `<#${channel.id}>` }), ephemeral: true });
+        await interaction.followUp({
+          content: i18n.t('adfilter.set_success', {
+            channel: `<#${channel.id}>`,
+          }),
+          ephemeral: true,
+        });
         return;
       }
 
       if (sub === 'delete') {
-        await db.deleteLogChannel(guildId, 'ad_filter');
+        await db.deleteAdFilter(guildId);
         try {
           await removeAnchor(client, guildId);
         } catch (e) {
           console.error('Failed to remove anchor on delete:', e);
         }
-        await interaction.followUp({ content: i18n.t('adfilter.delete_success'), ephemeral: true });
+        await interaction.followUp({
+          content: i18n.t('adfilter.delete_success'),
+          ephemeral: true,
+        });
         return;
       }
     },
