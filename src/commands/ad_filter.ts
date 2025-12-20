@@ -9,24 +9,24 @@ const db = new Database();
 
 export default Command({
   name: 'ad_filter',
-  description: 'Manage advertisement filter channel',
+  description: i18n.t('adfilter.command_description'),
   type: ApplicationCommandType.ChatInput,
   options: [
     {
       type: ApplicationCommandOptionType.Subcommand,
       name: 'set',
-      description: 'Set the channel used for advertisement filtering',
+      description: i18n.t('adfilter.set_description'),
       options: [
         {
           name: 'channel',
-          description: 'Text channel to receive ad filter messages',
+          description: i18n.t('adfilter.channel_description'),
           type: ApplicationCommandOptionType.Channel,
           channel_types: [ChannelType.GuildText],
           required: true,
         },
         {
           name: 'log_channel',
-          description: 'Optional channel to send moderation logs to',
+          description: i18n.t('adfilter.log_channel_description'),
           type: ApplicationCommandOptionType.Channel,
           channel_types: [ChannelType.GuildText],
           required: false,
@@ -36,7 +36,7 @@ export default Command({
     {
       type: ApplicationCommandOptionType.Subcommand,
       name: 'delete',
-      description: 'Remove the ad filter channel',
+      description: i18n.t('adfilter.delete_description'),
     },
   ],
   execute: {
@@ -45,7 +45,7 @@ export default Command({
       const sub = interaction.options.getSubcommand();
       const guildId = interaction.guildId;
       if (!guildId) {
-        await interaction.followUp({ content: 'このコマンドはサーバー内で使用してください。', ephemeral: true });
+        await interaction.followUp({ content: i18n.t('adfilter.need_guild'), ephemeral: true });
         return;
       }
 
@@ -55,11 +55,10 @@ export default Command({
         const channel = interaction.options.getChannel('channel', true);
         const logChannel = interaction.options.getChannel('log_channel', false);
         if (channel.type !== ChannelType.GuildText) {
-          await interaction.followUp({ content: '指定されたチャンネルはテキストチャンネルではありません。', ephemeral: true });
+          await interaction.followUp({ content: i18n.t('adfilter.not_text_channel'), ephemeral: true });
           return;
         }
         await db.setLogChannel(guildId, 'ad_filter', channel.id);
-        // initialize anchor embed in the channel
         try {
           // @ts-ignore
           await sendAnchor(client, guildId, channel.id);
@@ -68,26 +67,25 @@ export default Command({
         }
         if (logChannel) {
           if (logChannel.type !== ChannelType.GuildText) {
-            await interaction.followUp({ content: '指定されたログチャンネルはテキストチャンネルではありません。', ephemeral: true });
+            await interaction.followUp({ content: i18n.t('adfilter.not_log_text_channel'), ephemeral: true });
             return;
           }
           await db.setLogChannel(guildId, 'log', logChannel.id);
-          await interaction.followUp({ content: `宣伝検閲用チャンネルを <#${channel.id}> に設定し、ログを <#${logChannel.id}> に送信するようにしました。`, ephemeral: true });
+          await interaction.followUp({ content: i18n.t('adfilter.set_success_with_log', { channel: `<#${channel.id}>`, log: `<#${logChannel.id}>` }), ephemeral: true });
           return;
         }
-        await interaction.followUp({ content: `宣伝検閲用チャンネルを <#${channel.id}> に設定しました。`, ephemeral: true });
+        await interaction.followUp({ content: i18n.t('adfilter.set_success', { channel: `<#${channel.id}>` }), ephemeral: true });
         return;
       }
 
       if (sub === 'delete') {
         await db.deleteLogChannel(guildId, 'ad_filter');
         try {
-          // @ts-ignore
           await removeAnchor(client, guildId);
         } catch (e) {
           console.error('Failed to remove anchor on delete:', e);
         }
-        await interaction.followUp({ content: '宣伝検閲用チャンネルの設定を削除しました。', ephemeral: true });
+        await interaction.followUp({ content: i18n.t('adfilter.delete_success'), ephemeral: true });
         return;
       }
     },

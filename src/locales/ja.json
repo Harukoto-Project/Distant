@@ -35,5 +35,17 @@
     "log_reason": "理由",
     "log_content": "内容: \n```\n{{content}}\n```",
     "unknown": "不明"
+    ,
+    "command_description": "宣伝検閲用チャンネルの管理",
+    "set_description": "宣伝検閲に使用するチャンネルを設定します",
+    "channel_description": "宣伝検閲メッセージを受け取るテキストチャンネル",
+    "log_channel_description": "モデレーションログを送信するオプションのチャンネル",
+    "delete_description": "宣伝検閲チャンネルの設定を削除します",
+    "need_guild": "このコマンドはサーバー内で使用してください。",
+    "not_text_channel": "指定されたチャンネルはテキストチャンネルではありません。",
+    "not_log_text_channel": "指定されたログチャンネルはテキストチャンネルではありません。",
+    "set_success": "宣伝検閲用チャンネルを {{channel}} に設定しました。",
+    "set_success_with_log": "宣伝検閲用チャンネルを {{channel}} に設定し、ログを {{log}} に送信するようにしました。",
+    "delete_success": "宣伝検閲用チャンネルの設定を削除しました。"
   }
 }
