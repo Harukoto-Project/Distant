@@ -1,4 +1,11 @@
-{
+ {
+  "language": {
+    "command_description": "Botの応答言語を選択します",
+    "lang_description": "Botが応答する言語を選択してください",
+    "japanese": "日本語",
+    "need_guild": "このコマンドはサーバー内で使用してください。",
+    "set_success": "言語を{{lang}}に設定しました。"
+  },
   "ready": {
     "message": "ボットが準備できました",
     "logged_in": "ログインしました: {{tag}}"
@@ -37,7 +44,7 @@
     "unknown": "不明"
     ,
     "command_description": "宣伝検閲用チャンネルの管理",
-    "log_confidence": "危険度"
+    "log_confidence": "危険度",
     "set_description": "宣伝検閲に使用するチャンネルを設定します",
     "channel_description": "宣伝検閲メッセージを受け取るテキストチャンネル",
     "log_channel_description": "モデレーションログを送信するオプションのチャンネル",

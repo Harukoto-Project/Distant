@@ -4,10 +4,26 @@ export type PolicyCheckResult = {
   confidence?: number;
 };
 
-export async function checkPolicy(text: string): Promise<PolicyCheckResult> {
+import Database from './Database';
+
+export async function checkPolicy(text: string, guildId?: string): Promise<PolicyCheckResult> {
   const baseURL = 'https://api.voids.top/v1';
   const model = 'gpt-5-chat-latest';
-  const systemPrompt = '安全性チェック。JSONのみで返してください。reasonは例のように簡潔に。フィールド: is_safe, reason, confidence(0-100)。例: {"is_safe":false,"reason":"性的コンテンツの可能性","confidence":90}';
+  let lang = 'ja';
+  if (guildId) {
+    try {
+      const db = new Database();
+      await db.init();
+      const l = await db.getLogChannel(guildId, 'lang');
+      if (l) lang = l;
+    } catch {}
+  }
+  let systemPrompt = '';
+  if (lang === 'ja') {
+    systemPrompt = '安全性チェック。JSONのみで返してください。is_safe: trueの場合は{"is_safe":true}だけを返してください。フィールド: is_safe, reason, confidence(0-100)。例: {"is_safe":false,"reason":"性的コンテンツの可能性","confidence":90}';
+  } else {
+    systemPrompt = 'Safety check. Respond only with JSON. If is_safe: true, respond only with {"is_safe":true}. Fields: is_safe, reason, confidence (0-100). Example: {"is_safe":false,"reason":"Possible sexual content","confidence":90}';
+  }
   const compactText = String(text).replace(/\s+/g, ' ').trim().slice(0, 1000);
   const body = {
     model,
