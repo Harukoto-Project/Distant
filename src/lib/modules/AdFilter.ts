@@ -66,6 +66,52 @@ export async function removeAnchor(client: Client, guildId: string) {
 }
 
 export async function moderateMessage(client: Client, message: Message) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const inviteRegex = /https?:\/\/(?:www\.)?(?:discord(?:app)?\.com\/invite|discord\.gg)\/([a-zA-Z0-9]+)/g;
+  const allUrls = message.content?.match(urlRegex) || [];
+  let invitesRaw = Array.from(message.content?.matchAll(inviteRegex) || []).map(m => m[1]);
+  for (const u of allUrls) {
+    const m = u.match(/https?:\/\/(?:www\.)?(?:discord(?:app)?\.com\/invite|discord\.gg)\/([a-zA-Z0-9]+)/);
+    if (m && m[1] && !invitesRaw.includes(m[1])) invitesRaw.push(m[1]);
+  }
+  const urls = allUrls.filter(u => !u.match(inviteRegex));
+  console.log('urls:', urls);
+  console.log('invitesRaw:', invitesRaw);
+
+  let embedMetas = (message.embeds || []).map(embed => ({
+    title: embed.title || '',
+    description: embed.description || '',
+    url: embed.url || '',
+    image: embed.image?.url || '',
+    provider: embed.provider?.name || '',
+    author: embed.author?.name || ''
+  }));
+
+  console.log('embeds:', embedMetas);
+
+  async function fetchInviteMeta(code　: string): Promise<{ code: string; name: string; description: string }> {
+    try {
+      const res = await fetch(`https://discord.com/api/v10/invites/${code}?with_counts=true&with_expiration=true`);
+      if (!res.ok) return { code, name: '', description: '' };
+      const data = await res.json();
+      return {
+        code,
+        name: data.guild?.name || '',
+        description: data.guild?.description || ''
+      };
+    } catch {
+      return { code, name: '', description: '' };
+    }
+  }
+  const inviteMetas = await Promise.all(invitesRaw.map(fetchInviteMeta));
+  console.log('inviteMetas:', inviteMetas);
+
+  const aiInput: any = { content: message.content || '' };
+  if (urls.length > 0) aiInput.urls = urls;
+  if (embedMetas.length > 0) aiInput.embeds = embedMetas;
+  const invitesArr = inviteMetas.map(i => ({ code: i.code, name: i.name, description: i.description }));
+  if (invitesArr.length > 0) aiInput.invites = invitesArr;
+  console.log('aiInput:', aiInput);
   if (message.author.bot || !message.guildId) return;
   await db.init();
   const configuredChannelId = await db.getLogChannel(message.guildId, 'ad_filter');
@@ -76,7 +122,7 @@ export async function moderateMessage(client: Client, message: Message) {
     await sendAnchor(client, message.guildId!, configuredChannelId);
   });
 
-  const policy = await checkPolicy(message.content || '');
+  const policy = await checkPolicy(JSON.stringify(aiInput));
   if (!policy.is_safe) {
     try {
       await message.delete();
