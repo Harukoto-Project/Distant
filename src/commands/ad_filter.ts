@@ -60,7 +60,6 @@ export default Command({
         }
         await db.setLogChannel(guildId, 'ad_filter', channel.id);
         try {
-          // @ts-ignore
           await sendAnchor(client, guildId, channel.id);
         } catch (e) {
           console.error('Failed to send anchor on set:', e);

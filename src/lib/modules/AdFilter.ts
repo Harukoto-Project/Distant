@@ -67,14 +67,11 @@ export async function removeAnchor(client: Client, guildId: string) {
 
 export async function moderateMessage(client: Client, message: Message) {
   if (message.author.bot || !message.guildId) return;
-
-  // Only process messages posted in the configured ad_filter channel
   await db.init();
   const configuredChannelId = await db.getLogChannel(message.guildId, 'ad_filter');
   if (!configuredChannelId) return;
   if (message.channelId !== configuredChannelId) return;
 
-  // Maintain anchor embed: delete previous anchor and post a fresh one.
   await withChannelLock(configuredChannelId, async () => {
     await sendAnchor(client, message.guildId!, configuredChannelId);
   });

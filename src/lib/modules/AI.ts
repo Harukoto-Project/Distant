@@ -7,7 +7,7 @@ export type PolicyCheckResult = {
 export async function checkPolicy(text: string): Promise<PolicyCheckResult> {
   const baseURL = 'https://api.voids.top/v1';
   const model = 'gpt-5-chat-latest';
-  const systemPrompt = '安全性チェック。違反があればJSONのみで返してください。reasonは例のように簡潔に。フィールド: is_safe, reason, confidence(0-100)。例: {"is_safe":false,"reason":"性的コンテンツの可能性","confidence":90}';
+  const systemPrompt = '安全性チェック。JSONのみで返してください。reasonは例のように簡潔に。フィールド: is_safe, reason, confidence(0-100)。例: {"is_safe":false,"reason":"性的コンテンツの可能性","confidence":90}';
   const compactText = String(text).replace(/\s+/g, ' ').trim().slice(0, 1000);
   const body = {
     model,

@@ -39,12 +39,6 @@ export class Distant extends Client {
 
   public commands: Collection<string, AnyCommandType> = new Collection();
 
-  /**
-   * 指定されたファイルパスからモジュールをインポートし、そのデフォルトエクスポートを返します。
-   *
-   * @param filePath インポートするファイルのパス。文字列で指定します。
-   * @return インポートしたモジュールのデフォルトエクスポートを返します。プロミスでラップされています。
-   */
   public async importFile<T>(filePath: string): Promise<T> {
     const file = await import(filePath);
     if (!file) {
