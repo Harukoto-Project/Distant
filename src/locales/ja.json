@@ -44,7 +44,7 @@
     "log_title": "不適切な宣伝が削除されました",
     "log_channel": "チャンネル",
     "log_sender": "送信者",
-    "log_reason": "理由",
+    "log_reason": "理由:\n```\n{{reason}}\n```",
     "log_content": "内容: \n```\n{{content}}\n```",
     "unknown": "不明"
     ,

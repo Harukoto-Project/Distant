@@ -104,13 +104,15 @@ export async function moderateMessage(client: Client, message: Message) {
           const logEmbed = new EmbedBuilder()
             .setTitle(i18n.t('adfilter.log_title'))
             .setThumbnail(message.author.displayAvatarURL() || '')
-            .setDescription(i18n.t('adfilter.log_content', { content: message.content || i18n.t('adfilter.unknown') }))
+            .setDescription(
+              `**${i18n.t('adfilter.log_content', { content: message.content || i18n.t('adfilter.unknown') })}**\n` +
+              i18n.t('adfilter.log_reason', { reason: policy.reason || i18n.t('adfilter.unknown') })
+            )
             .setColor(0xff0000)
             .addFields(
               { name: i18n.t('adfilter.log_channel'), value: `<#${configuredChannelId}>`, inline: true },
               { name: i18n.t('adfilter.log_sender'), value: ` <@!${message.author.id}> (${message.author.id})`, inline: true },
-              { name: i18n.t('adfilter.log_reason'), value: policy.reason || i18n.t('adfilter.unknown'), inline: false },
-              { name: i18n.t('adfilter.log_confidence'), value: typeof policy.confidence === 'number' ? `${policy.confidence}%` : i18n.t('adfilter.unknown'), inline: false },
+              { name: i18n.t('adfilter.log_confidence'), value: typeof policy.confidence === 'number' ? `${policy.confidence}%` : i18n.t('adfilter.unknown'), inline: true },
             )
             .setTimestamp();
           await (logCh as TextChannel).send({ embeds: [logEmbed] });
