@@ -3,6 +3,7 @@
     "command_description": "Botの応答言語を選択します",
     "lang_description": "Botが応答する言語を選択してください",
     "japanese": "日本語",
+    "ja": "日本語",
     "need_guild": "このコマンドはサーバー内で使用してください。",
     "set_success": "言語を{{lang}}に設定しました。"
   },

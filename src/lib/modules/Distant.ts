@@ -1,3 +1,4 @@
+
 import {
   ApplicationIntegrationType,
   Client,
@@ -10,7 +11,6 @@ import { Event } from './Event';
 import { AnyCommandType, CommandType } from '../interfaces/Command';
 import dotenv from 'dotenv';
 import { getI18n } from './i18nInstance';
-
 import { promisify } from 'util';
 import glob from 'glob';
 
@@ -28,6 +28,18 @@ export class Distant extends Client {
     public config: Config,
   ) {
     super(options);
+  }
+
+  public async reRegisterGuildCommands(guildId: string, lang: string) {
+    const commands: CommandType[] = [];
+    const commandFiles = await this.globPromise(
+      __dirname + '/../../commands/**/*{.ts,.js}',
+    );
+    for (const file of commandFiles) {
+      const command: CommandType = await this.importFile<CommandType>(file);
+      commands.push(command);
+    }
+    await this.application?.commands.set(commands, guildId);
   }
 
   public async start(): Promise<void> {

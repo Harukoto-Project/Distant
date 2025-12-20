@@ -1,8 +1,9 @@
+
 import { ApplicationCommandType, ApplicationCommandOptionType } from 'discord.js';
 import { Command } from '../lib/modules/Command';
 import Database from '../lib/modules/Database';
 import { getI18n } from '../lib/modules/i18nInstance';
-
+import { Distant } from '../lib/modules/Distant';
 const db = new Database();
 
 export default Command({
@@ -32,6 +33,12 @@ export default Command({
       const lang = interaction.options.getString('lang', true);
       await db.init();
       await db.setLogChannel(guildId, 'lang', lang);
+      const client = interaction.client as Distant;
+      if (client && client.application) {
+        if (client.reRegisterGuildCommands) {
+          await client.reRegisterGuildCommands(guildId, lang);
+        }
+      }
       await interaction.followUp({ content: i18n.t('language.set_success', { lang: i18n.t(`language.${lang}`) }), ephemeral: true });
     }
   }
