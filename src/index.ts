@@ -2,8 +2,8 @@ import { GatewayIntentBits, Partials } from 'discord.js';
 import { Distant } from './lib/modules/Distant';
 import dotenv from 'dotenv';
 import { getI18n } from './lib/modules/i18nInstance';
-import startApp from './app';
 import Database from './lib/modules/Database';
+import startApi from './api/index';
 
 dotenv.config();
 
@@ -37,7 +37,7 @@ client
     try {
       const db = new Database();
       db.init().catch(() => {});
-      startApp(client);
+      startApi(client);
     } catch (e) {
       console.error('Failed to start API', e);
     }

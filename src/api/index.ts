@@ -1,6 +1,6 @@
 import express from 'express';
 import type { Client } from 'discord.js';
-import mountRouters from './loader';
+import { mountRouters } from './loader';
 
 export function startApi(
   client: Client,
