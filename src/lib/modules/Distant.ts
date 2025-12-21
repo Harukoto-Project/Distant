@@ -102,23 +102,6 @@ export class Distant extends Client {
       commands.push(command);
       this.commands.set(command.name, command);
     }
-
-    this.once('ready', () => {
-      this.application?.commands
-        .set(commands)
-        .then(() =>
-          console.log(
-            getI18n().t('commands.registered', {
-              count: String(commands.length),
-              guilds: String(this.guilds.cache.size),
-            }),
-          ),
-        )
-        .catch((e) => {
-          console.error(getI18n().t('commands.register_failed'));
-          console.error(e);
-        });
-    });
   }
 
   private async _registerEvents(): Promise<void> {

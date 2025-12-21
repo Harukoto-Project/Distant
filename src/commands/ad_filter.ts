@@ -8,29 +8,29 @@ import Database from '../lib/modules/Database';
 import { sendAnchor, removeAnchor } from '../lib/modules/AdFilter';
 import { getI18n } from '../lib/modules/i18nInstance';
 
-const i18n = getI18n();
+// const i18n = getI18n();
 const db = new Database();
 
 export default Command({
   name: 'ad_filter',
-  description: i18n.t('adfilter.command_description'),
+  description: getI18n().t('adfilter.command_description'),
   type: ApplicationCommandType.ChatInput,
   options: [
     {
       type: ApplicationCommandOptionType.Subcommand,
       name: 'set',
-      description: i18n.t('adfilter.set_description'),
+      description: getI18n().t('adfilter.set_description'),
       options: [
         {
           name: 'channel',
-          description: i18n.t('adfilter.channel_description'),
+          description: getI18n().t('adfilter.channel_description'),
           type: ApplicationCommandOptionType.Channel,
           channel_types: [ChannelType.GuildText],
           required: true,
         },
         {
           name: 'log_channel',
-          description: i18n.t('adfilter.log_channel_description'),
+          description: getI18n().t('adfilter.log_channel_description'),
           type: ApplicationCommandOptionType.Channel,
           channel_types: [ChannelType.GuildText],
           required: false,
@@ -40,7 +40,7 @@ export default Command({
     {
       type: ApplicationCommandOptionType.Subcommand,
       name: 'delete',
-      description: i18n.t('adfilter.delete_description'),
+      description: getI18n().t('adfilter.delete_description'),
     },
   ],
   execute: {
@@ -50,7 +50,7 @@ export default Command({
       const guildId = interaction.guildId;
       if (!guildId) {
         await interaction.followUp({
-          content: i18n.t('adfilter.need_guild'),
+          content: getI18n().t('adfilter.need_guild'),
           ephemeral: true,
         });
         return;
@@ -63,7 +63,7 @@ export default Command({
         const logChannel = interaction.options.getChannel('log_channel', false);
         if (channel.type !== ChannelType.GuildText) {
           await interaction.followUp({
-            content: i18n.t('adfilter.not_text_channel'),
+            content: getI18n().t('adfilter.not_text_channel'),
             ephemeral: true,
           });
           return;
@@ -74,7 +74,7 @@ export default Command({
             : null;
         if (logChannel && logChannel.type !== ChannelType.GuildText) {
           await interaction.followUp({
-            content: i18n.t('adfilter.not_log_text_channel'),
+            content: getI18n().t('adfilter.not_log_text_channel'),
             ephemeral: true,
           });
           return;
@@ -87,7 +87,7 @@ export default Command({
         }
         if (logChannel) {
           await interaction.followUp({
-            content: i18n.t('adfilter.set_success_with_log', {
+            content: getI18n().t('adfilter.set_success_with_log', {
               channel: `<#${channel.id}>`,
               log: `<#${logChannel.id}>`,
             }),
@@ -96,7 +96,7 @@ export default Command({
           return;
         }
         await interaction.followUp({
-          content: i18n.t('adfilter.set_success', {
+          content: getI18n().t('adfilter.set_success', {
             channel: `<#${channel.id}>`,
           }),
           ephemeral: true,
@@ -112,7 +112,7 @@ export default Command({
           console.error('Failed to remove anchor on delete:', e);
         }
         await interaction.followUp({
-          content: i18n.t('adfilter.delete_success'),
+          content: getI18n().t('adfilter.delete_success'),
           ephemeral: true,
         });
         return;

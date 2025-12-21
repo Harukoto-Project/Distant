@@ -9,6 +9,7 @@ export default class I18n {
 
   private load(locale: string): Record<string, any> {
     const candidates = [
+      path.join(process.cwd(), 'src', 'locales', `${locale}.json`),
       path.join(process.cwd(), 'dist', 'locales', `${locale}.json`),
     ];
 
