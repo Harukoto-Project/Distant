@@ -9,19 +9,28 @@ export default class I18n {
 
   private load(locale: string): Record<string, any> {
     const candidates = [
-      path.join(__dirname, '../../locales', `${locale}.json`),
-      path.join(process.cwd(), 'src', 'locales', `${locale}.json`),
-      path.join(process.cwd(), 'locales', `${locale}.json`),
       path.join(process.cwd(), 'dist', 'locales', `${locale}.json`),
     ];
 
     for (const p of candidates) {
       try {
+        console.log('[I18n] checking path:', p);
         if (fs.existsSync(p)) {
+          console.log('[I18n] found:', p);
           const raw = fs.readFileSync(p, 'utf8');
-          return JSON.parse(raw);
+          try {
+            const parsed = JSON.parse(raw);
+            console.log('[I18n] parsed:', Object.keys(parsed));
+            return parsed;
+          } catch (jsonErr) {
+            console.log('[I18n] JSON parse error:', jsonErr);
+          }
+        } else {
+          console.log('[I18n] not found:', p);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.log('[I18n] read error:', e);
+      }
     }
 
     return {};
