@@ -102,8 +102,6 @@ export async function moderateMessage(client: Client, message: Message) {
     if (m && m[1] && !invitesRaw.includes(m[1])) invitesRaw.push(m[1]);
   }
   const urls = allUrls.filter((u) => !u.match(inviteRegex));
-  console.log('urls:', urls);
-  console.log('invitesRaw:', invitesRaw);
 
   let embedMetas = (message.embeds || []).map((embed) => ({
     title: embed.title || '',
@@ -113,8 +111,6 @@ export async function moderateMessage(client: Client, message: Message) {
     provider: embed.provider?.name || '',
     author: embed.author?.name || '',
   }));
-
-  console.log('embeds:', embedMetas);
 
   async function fetchInviteMeta(
     code: string,
@@ -135,7 +131,6 @@ export async function moderateMessage(client: Client, message: Message) {
     }
   }
   const inviteMetas = await Promise.all(invitesRaw.map(fetchInviteMeta));
-  console.log('inviteMetas:', inviteMetas);
 
   const aiInput: any = { content: message.content || '' };
   if (urls.length > 0) aiInput.urls = urls;
@@ -146,7 +141,6 @@ export async function moderateMessage(client: Client, message: Message) {
     description: i.description,
   }));
   if (invitesArr.length > 0) aiInput.invites = invitesArr;
-  console.log('aiInput:', aiInput);
   if (message.author.bot || !message.guildId) return;
   await db.init();
   const adFilterConfig = await db.getAdFilter(message.guildId);
