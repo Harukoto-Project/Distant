@@ -5,9 +5,8 @@ import path from 'path';
 let instance: I18n | null = null;
 
 function detectLocales(): string[] {
-  const localesDir = path.join(process.cwd(), 'src', 'locales');
   return fs
-    .readdirSync(localesDir)
+    .readdirSync(path.join(process.cwd(), 'src', 'locales'))
     .filter((f) => f.endsWith('.json'))
     .map((f) => f.replace(/\.json$/, ''));
 }
