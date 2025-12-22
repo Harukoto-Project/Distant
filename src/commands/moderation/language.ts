@@ -2,10 +2,10 @@ import {
   ApplicationCommandType,
   ApplicationCommandOptionType,
 } from 'discord.js';
-import { Command } from '../lib/modules/Command';
-import Database from '../lib/modules/Database';
-import { getI18n } from '../lib/modules/i18nInstance';
-import { Distant } from '../lib/modules/Distant';
+import { Command } from '../../lib/modules/Command';
+import Database from '../../lib/modules/Database';
+import { getI18n } from '../../lib/modules/i18nInstance';
+import { Distant } from '../../lib/modules/Distant';
 const db = new Database();
 
 export default Command({

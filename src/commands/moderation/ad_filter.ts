@@ -3,10 +3,10 @@ import {
   ChannelType,
   ApplicationCommandOptionType,
 } from 'discord.js';
-import { Command } from '../lib/modules/Command';
-import Database from '../lib/modules/Database';
-import { sendAnchor, removeAnchor } from '../lib/modules/AdFilter';
-import { getI18n } from '../lib/modules/i18nInstance';
+import { Command } from '../../lib/modules/Command';
+import Database from '../../lib/modules/Database';
+import { sendAnchor, removeAnchor } from '../../lib/modules/AdFilter';
+import { getI18n } from '../../lib/modules/i18nInstance';
 
 // const i18n = getI18n();
 const db = new Database();
